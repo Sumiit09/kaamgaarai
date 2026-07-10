@@ -8,6 +8,8 @@ import Button from '../../components/ui/Button';
 import Input, { Textarea, Select } from '../../components/ui/Input';
 import Toggle from '../../components/ui/Toggle';
 import { onboardingSteps, businessTypes, indianCities, indianStates } from '../../data/mockData';
+import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
 
 const StepContent = ({ step, data, setData }) => {
   switch (step) {
@@ -127,6 +129,7 @@ const StepContent = ({ step, data, setData }) => {
 
 const Onboarding = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
 
   const [data, setData] = useState({
@@ -141,6 +144,33 @@ const Onboarding = () => {
   });
 
   const progress = (step / 4) * 100;
+
+  const handleGoLive = async () => {
+  try {
+    const response = await axios.post(
+      "http://localhost:3000/api/businesses",
+      {
+        ownerId: user.id,
+        ownerName: user.user_metadata?.name || "Owner",
+        businessName: data.businessName,
+        category: data.category,
+        address: data.address,
+        city: data.city,
+        state: data.state,
+        pincode: data.pincode,
+        whatsapp: data.whatsapp,
+      }
+    );
+
+    console.log(response.data);
+
+    navigate("/dashboard/overview");
+  } catch (err) {
+    console.error(err);
+
+    alert("Failed to create business");
+  }
+};
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -204,9 +234,12 @@ const Onboarding = () => {
               Continue <ArrowRight className="w-4 h-4" />
             </Button>
           ) : (
-            <Button variant="primary" onClick={() => navigate('/dashboard/overview')}>
-              Go Live! <Check className="w-4 h-4" />
-            </Button>
+            <Button
+  variant="primary"
+  onClick={handleGoLive}
+>
+  Go Live! <Check className="w-4 h-4" />
+</Button>
           )}
         </div>
       </footer>

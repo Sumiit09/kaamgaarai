@@ -24,3 +24,47 @@ export const getBusinesses = async (req, res) => {
 
     }
 };
+export const createBusiness = async (req, res) => {
+  try {
+    const {
+      ownerId,
+      ownerName,
+      businessName,
+      category,
+      address,
+      city,
+      state,
+      pincode,
+      whatsapp,
+    } = req.body;
+
+    const { data, error } = await supabase
+      .from("businesses")
+      .insert([
+        {
+          owner_id: ownerId,
+          owner_name: ownerName,
+          name: businessName,
+          industry: category,
+          address,
+          city,
+          state,
+          pincode,
+          whatsapp,
+        },
+      ])
+      .select();
+
+    if (error) throw error;
+
+    res.status(201).json({
+      success: true,
+      business: data[0],
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
