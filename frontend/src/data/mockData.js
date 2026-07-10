@@ -509,12 +509,8 @@ export const knowledgeBase = {
 export const onboardingSteps = [
   { step: 1, title: 'Business Name & Category', icon: 'Store' },
   { step: 2, title: 'Address & Location', icon: 'MapPin' },
-  { step: 3, title: 'Working Hours', icon: 'Clock' },
-  { step: 4, title: 'Services & Pricing', icon: 'Tag' },
-  { step: 5, title: 'Common FAQs', icon: 'HelpCircle' },
-  { step: 6, title: 'AI Language & Tone', icon: 'Languages' },
-  { step: 7, title: 'Business Rules', icon: 'Shield' },
-  { step: 8, title: 'Connect WhatsApp', icon: 'MessageCircle' },
+  { step: 3, title: 'Connect WhatsApp', icon: 'MessageCircle' },
+  { step: 4, title: 'Go Live', icon: 'Rocket' },
 ];
 
 // ── Business Types for Onboarding ─────────────────────────────

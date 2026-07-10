@@ -42,174 +42,8 @@ const StepContent = ({ step, data, setData }) => {
             onChange={(e) => setData({ ...data, pincode: e.target.value })} />
         </div>
       );
+
     case 3:
-      return (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <Input label="Opening Time" type="time" value={data.openTime}
-              onChange={(e) => setData({ ...data, openTime: e.target.value })} />
-            <Input label="Closing Time" type="time" value={data.closeTime}
-              onChange={(e) => setData({ ...data, closeTime: e.target.value })} />
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-text-secondary">Working Days</p>
-            <div className="flex flex-wrap gap-2">
-              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-                <button key={day} type="button"
-                  onClick={() => setData({
-                    ...data,
-                    workingDays: data.workingDays.includes(day)
-                      ? data.workingDays.filter((d) => d !== day)
-                      : [...data.workingDays, day],
-                  })}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    data.workingDays.includes(day)
-                      ? 'bg-primary text-white'
-                      : 'bg-surface border border-border-light text-text-secondary hover:text-text-primary'
-                  }`}>
-                  {day}
-                </button>
-              ))}
-            </div>
-          </div>
-          <Textarea label="Holiday Dates (optional)" placeholder="e.g., 26 Jan, 15 Aug, 25 Dec..." rows={2}
-            value={data.holidays} onChange={(e) => setData({ ...data, holidays: e.target.value })} />
-        </div>
-      );
-    case 4:
-      return (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-text-secondary">Services & Pricing</p>
-            <Button variant="ghost" size="sm" type="button"
-              onClick={() => setData({ ...data, services: [...data.services, { name: '', price: '' }] })}>
-              <Plus className="w-4 h-4" /> Add
-            </Button>
-          </div>
-          {data.services.map((svc, i) => (
-            <div key={i} className="flex gap-2">
-              <Input placeholder="Service name" value={svc.name}
-                onChange={(e) => {
-                  const services = [...data.services];
-                  services[i] = { ...services[i], name: e.target.value };
-                  setData({ ...data, services });
-                }} />
-              <Input placeholder="₹ Price" className="w-32" value={svc.price}
-                onChange={(e) => {
-                  const services = [...data.services];
-                  services[i] = { ...services[i], price: e.target.value };
-                  setData({ ...data, services });
-                }} />
-              <button type="button" onClick={() => setData({ ...data, services: data.services.filter((_, j) => j !== i) })}
-                className="p-2 text-text-tertiary hover:text-danger transition-colors">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
-          {data.services.length === 0 && (
-            <p className="text-sm text-text-tertiary text-center py-4">No services added yet</p>
-          )}
-        </div>
-      );
-    case 5:
-      return (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-text-secondary">Common FAQs</p>
-            <Button variant="ghost" size="sm" type="button"
-              onClick={() => setData({ ...data, faqs: [...data.faqs, { q: '', a: '' }] })}>
-              <Plus className="w-4 h-4" /> Add
-            </Button>
-          </div>
-          {data.faqs.map((faq, i) => (
-            <div key={i} className="space-y-2 p-3 bg-surface rounded-lg border border-border-light">
-              <Input placeholder="Question" value={faq.q}
-                onChange={(e) => {
-                  const faqs = [...data.faqs];
-                  faqs[i] = { ...faqs[i], q: e.target.value };
-                  setData({ ...data, faqs });
-                }} />
-              <Textarea placeholder="Answer" rows={2} value={faq.a}
-                onChange={(e) => {
-                  const faqs = [...data.faqs];
-                  faqs[i] = { ...faqs[i], a: e.target.value };
-                  setData({ ...data, faqs });
-                }} />
-              <button type="button" onClick={() => setData({ ...data, faqs: data.faqs.filter((_, j) => j !== i) })}
-                className="text-xs text-danger hover:text-danger/80 transition-colors">
-                Remove
-              </button>
-            </div>
-          ))}
-          {data.faqs.length === 0 && (
-            <p className="text-sm text-text-tertiary text-center py-4">No FAQs added yet</p>
-          )}
-        </div>
-      );
-    case 6:
-      return (
-        <div className="space-y-4">
-          <Select label="AI Language" value={data.language}
-            onChange={(e) => setData({ ...data, language: e.target.value })}>
-            <option value="hinglish">Hinglish (Hindi + English)</option>
-            <option value="hindi">Hindi</option>
-            <option value="english">English</option>
-            <option value="marathi">Marathi</option>
-          </Select>
-          <div>
-            <p className="text-sm font-medium text-text-secondary mb-2">AI Tone</p>
-            <div className="grid grid-cols-3 gap-2">
-              {['Professional', 'Friendly', 'Casual'].map((tone) => (
-                <button key={tone} type="button"
-                  onClick={() => setData({ ...data, tone: tone.toLowerCase() })}
-                  className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    data.tone === tone.toLowerCase()
-                      ? 'bg-primary text-white'
-                      : 'bg-surface border border-border-light text-text-secondary hover:text-text-primary'
-                  }`}>
-                  {tone}
-                </button>
-              ))}
-            </div>
-          </div>
-          <Textarea label="Greeting Message" rows={3}
-            placeholder="Namaste! Dream Salon mein aapka swagat hai..."
-            value={data.greeting}
-            onChange={(e) => setData({ ...data, greeting: e.target.value })} />
-        </div>
-      );
-    case 7:
-      return (
-        <div className="space-y-4">
-          <div>
-            <p className="text-sm font-medium text-text-secondary mb-2">AI Should Do</p>
-            <div className="space-y-2">
-              {['Always greet customers with Namaste', 'Confirm booking before finalizing', 'Offer premium services when relevant'].map((rule, i) => (
-                <div key={i} className="flex items-center gap-2 p-2.5 bg-surface rounded-lg border border-border-light">
-                  <Check className="w-4 h-4 text-success shrink-0" />
-                  <span className="text-sm text-text-primary">{rule}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-text-secondary mb-2">AI Should NOT Do</p>
-            <div className="space-y-2">
-              {['Share pricing of competitors', 'Promise discounts without approval', 'Handle refund requests alone'].map((rule, i) => (
-                <div key={i} className="flex items-center gap-2 p-2.5 bg-surface rounded-lg border border-border-light">
-                  <X className="w-4 h-4 text-danger shrink-0" />
-                  <span className="text-sm text-text-primary">{rule}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <Textarea label="Custom Rules (optional)" rows={2}
-            placeholder="Add any specific rules for your business..."
-            value={data.customRules}
-            onChange={(e) => setData({ ...data, customRules: e.target.value })} />
-        </div>
-      );
-    case 8:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -239,23 +73,74 @@ const StepContent = ({ step, data, setData }) => {
           </div>
         </div>
       );
-    default:
+
+    case 4:
+      return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <div className="w-16 h-16 rounded-2xl bg-success/15 flex items-center justify-center mx-auto mb-4">
+          <Check className="w-8 h-8 text-success" />
+        </div>
+
+        <h3 className="text-xl font-semibold">
+          You're Almost Ready!
+        </h3>
+
+        <p className="text-text-secondary mt-2">
+          Review your business details before going live.
+        </p>
+      </div>
+
+      <div className="space-y-3 rounded-xl border border-border-light p-4">
+
+        <p><strong>Business:</strong> {data.businessName}</p>
+
+        <p><strong>Category:</strong> {data.category}</p>
+
+        <p><strong>Address:</strong> {data.address}</p>
+
+        <p><strong>City:</strong> {data.city}</p>
+
+        <p><strong>State:</strong> {data.state}</p>
+
+        <p><strong>Pincode:</strong> {data.pincode}</p>
+
+        <p>
+          <strong>WhatsApp:</strong>{" "}
+          {data.whatsapp || "Skipped (Can be connected later)"}
+        </p>
+
+      </div>
+
+      <div className="rounded-lg bg-primary/5 border border-primary/20 p-4">
+        <p className="text-sm text-text-secondary">
+          🚀 Your AI Employee will be activated after clicking Go Live.
+        </p>
+      </div>
+
+    </div>
+  );
+  default:
       return null;
   }
-};
+}
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
+
   const [data, setData] = useState({
-    businessName: '', category: '', address: '', city: '', state: '', pincode: '',
-    openTime: '09:00', closeTime: '21:00', workingDays: ['Mon','Tue','Wed','Thu','Fri','Sat'], holidays: '',
-    services: [{ name: '', price: '' }], faqs: [],
-    language: 'hinglish', tone: 'friendly', greeting: '',
-    customRules: '', whatsapp: '', useAPI: true,
+    businessName: '',
+    category: '',
+    address: '',
+    city: '',
+    state: '',
+    pincode: '',
+    whatsapp: '',
+    useAPI: true,
   });
 
-  const progress = (step / 8) * 100;
+  const progress = (step / 4) * 100;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -272,7 +157,7 @@ const Onboarding = () => {
       {/* Progress */}
       <div className="max-w-3xl mx-auto w-full px-6 pt-8">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-sm text-text-secondary">Step {step} of 8</p>
+          <p className="text-sm text-text-secondary">Step {step} of 4</p>
           <p className="text-sm font-medium text-text-primary">{onboardingSteps[step - 1].title}</p>
         </div>
         <div className="h-2 bg-surface rounded-full overflow-hidden">
@@ -314,7 +199,7 @@ const Onboarding = () => {
           <Button variant="ghost" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1}>
             <ArrowLeft className="w-4 h-4" /> Back
           </Button>
-          {step < 8 ? (
+          {step < 4 ? (
             <Button variant="primary" onClick={() => setStep(step + 1)}>
               Continue <ArrowRight className="w-4 h-4" />
             </Button>
