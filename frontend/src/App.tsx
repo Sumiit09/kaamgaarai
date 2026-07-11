@@ -26,11 +26,13 @@ import BusinessCalendar from './pages/dashboard/BusinessCalendar';
 import EmergencyMode from './pages/dashboard/EmergencyMode';
 import BroadcastCenter from './pages/dashboard/BroadcastCenter';
 import BusinessProfile from './pages/dashboard/BusinessProfile';
+import { BusinessProvider } from "./context/BusinessContext";
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+  <BusinessProvider>
+    <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
 
@@ -66,8 +68,9 @@ function App() {
             <Route path="business-profile" element={<BusinessProfile />} />
           </Route>
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            </BrowserRouter>
+    </BusinessProvider>
+  </AuthProvider>
   );
 }
 

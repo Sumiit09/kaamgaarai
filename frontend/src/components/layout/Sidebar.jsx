@@ -10,7 +10,7 @@ import {
 import Logo from '../ui/Logo';
 import Badge from '../ui/Badge';
 import Toggle from '../ui/Toggle';
-import { businessInfo } from '../../data/mockData';
+import { useBusiness } from '../../context/BusinessContext';
 
 const navGroups = [
   {
@@ -52,6 +52,7 @@ const navGroups = [
 const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
   const location = useLocation();
   const navigate = useNavigate();
+    const { business } = useBusiness();
   const [aiOnline, setAiOnline] = useState(true);
 
   const NavLink = ({ item }) => {
@@ -95,10 +96,12 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
         <div className="px-4 py-3 border-b border-border-light">
           <div className="flex items-center justify-between mb-2">
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-text-primary truncate">{businessInfo.name}</p>
-              <p className="text-xs text-text-tertiary">{businessInfo.city}</p>
+              <p className="text-sm font-semibold text-text-primary truncate">{business?.name || "Loading..."}</p>
+              <p className="text-xs text-text-tertiary">{business?.city || ""}</p>
             </div>
-            <Badge variant="info" size="sm" className="shrink-0 ml-1">{businessInfo.plan}</Badge>
+            <Badge variant="info" size="sm" className="shrink-0 ml-1">
+  Starter
+</Badge>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
