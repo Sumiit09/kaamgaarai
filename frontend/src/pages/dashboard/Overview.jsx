@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useBusiness } from "../../context/BusinessContext";
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -145,9 +146,33 @@ const EmergencyWidget = ({ navigate }) => {
 // ── Main ──────────────────────────────────────────────────────
 const Overview = () => {
   const navigate = useNavigate();
+const { business } = useBusiness();
 
   return (
     <div className="space-y-6">
+      <Card>
+  <CardContent>
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-2xl font-bold text-text-primary">
+          Welcome back 👋
+        </h1>
+
+        <p className="text-lg font-semibold text-primary mt-1">
+          {business?.name || "Your Business"}
+        </p>
+
+        <p className="text-sm text-text-secondary mt-1">
+          {business?.city}, {business?.state}
+        </p>
+      </div>
+
+      <Badge variant="success">
+        {business?.industry || "Business"}
+      </Badge>
+    </div>
+  </CardContent>
+</Card>
       {/* Emergency alert banner */}
       <AnimatePresence>
         <EmergencyWidget navigate={navigate} />
