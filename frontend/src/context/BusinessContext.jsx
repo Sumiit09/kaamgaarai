@@ -23,7 +23,7 @@ export function BusinessProvider({ children }) {
 );
 
 setBusiness(res.data.business);
-console.log("Business:", res.data.business);
+
     } catch (err) {
       console.error("Failed to fetch business", err);
     } finally {

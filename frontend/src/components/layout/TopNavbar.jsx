@@ -4,11 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Bell, ChevronDown, Menu, Command, User, Settings, LogOut } from 'lucide-react';
 import Avatar from '../ui/Avatar';
 import Badge from '../ui/Badge';
-import { businessInfo, notifications } from '../../data/mockData';
+import { notifications } from '../../data/mockData';
+import { useBusiness } from '../../context/BusinessContext';
 
 const TopNavbar = ({ collapsed, onMenuClick }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { business } = useBusiness();
   const [showNotif, setShowNotif] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -135,10 +137,10 @@ const TopNavbar = ({ collapsed, onMenuClick }) => {
               onClick={() => setShowProfile(!showProfile)}
               className="flex items-center gap-2 p-1 rounded-lg hover:bg-card-hover transition-colors"
             >
-              <Avatar name={businessInfo.owner} size="sm" color="primary" />
+              <Avatar name={business?.owner_name || "Owner"} size="sm" color="primary" />
               <div className="hidden sm:block text-left">
-                <p className="text-sm font-medium text-text-primary">{businessInfo.owner}</p>
-                <p className="text-xs text-text-tertiary">{businessInfo.name}</p>
+                <p className="text-sm font-medium text-text-primary">{business?.owner_name || "Owner"}</p>
+                <p className="text-xs text-text-tertiary">{business?.name || "Business"}</p>
               </div>
               <ChevronDown className="w-4 h-4 text-text-tertiary hidden sm:block" />
             </button>
@@ -151,8 +153,8 @@ const TopNavbar = ({ collapsed, onMenuClick }) => {
                   className="absolute right-0 mt-2 w-56 bg-card border border-border-light rounded-xl shadow-float overflow-hidden z-50"
                 >
                   <div className="p-3 border-b border-border-light">
-                    <p className="text-sm font-semibold text-text-primary">{businessInfo.owner}</p>
-                    <p className="text-xs text-text-tertiary">{businessInfo.email}</p>
+                    <p className="text-sm font-semibold text-text-primary">{business?.owner_name || "Owner"}</p>
+                    <p className="text-xs text-text-tertiary">{"Email not available"}</p>
                   </div>
                   <div className="p-1">
                     <button onClick={() => navigate('/dashboard/settings')} className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-card-hover transition-colors">
