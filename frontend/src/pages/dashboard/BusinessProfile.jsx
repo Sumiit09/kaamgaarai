@@ -8,8 +8,11 @@ import {
 import { Card, CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
+import { useBusiness } from "../../context/BusinessContext";
+import { useEffect } from "react";
 import Input, { Textarea, Select } from '../../components/ui/Input';
 import Tabs from '../../components/ui/Tabs';
+import GeneralInfo from "../../components/business/GeneralInfo";
 import Toggle from '../../components/ui/Toggle';
 import Avatar from '../../components/ui/Avatar';
 import { businessProfile, businessTypes, indianCities, indianStates } from '../../data/mockData';
@@ -354,7 +357,7 @@ const BusinessProfile = () => {
 
       <AnimatePresence mode="wait">
         <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-          {tab === 'general' && <GeneralTab />}
+          {tab === "general" && <GeneralInfo />}
           {tab === 'services' && <ServicesTab />}
           {tab === 'hours' && <HoursTab />}
           {tab === 'photos' && <PhotosTab />}

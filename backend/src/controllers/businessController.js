@@ -92,3 +92,58 @@ export const getMyBusiness = async (req, res) => {
     });
   }
 };
+
+export const updateBusiness = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    console.log("Updating Business ID:", id);
+    console.log("Request Body:", req.body);
+
+    const {
+      name,
+      industry,
+      address,
+      city,
+      state,
+      pincode,
+      whatsapp,
+    } = req.body;
+
+    const { data, error } = await supabase
+      .from("businesses")
+      .update({
+        name,
+        industry,
+        address,
+        city,
+        state,
+        pincode,
+        whatsapp,
+      })
+      .eq("id", Number(id))
+      .select();
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Business not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      business: data[0],
+    });
+
+  } catch (err) {
+    console.error("Update Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};

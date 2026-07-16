@@ -38,10 +38,11 @@ setBusiness(res.data.business);
   return (
     <BusinessContext.Provider
       value={{
-        business,
-        loading,
-        fetchBusiness,
-      }}
+  business,
+  setBusiness,
+  loading,
+  fetchBusiness,
+}}
     >
       {children}
     </BusinessContext.Provider>
