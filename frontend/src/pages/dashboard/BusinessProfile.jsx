@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from "axios";
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Store, Phone, Mail, Globe, MapPin, Clock, Instagram, Facebook,
@@ -9,7 +10,6 @@ import { Card, CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import { useBusiness } from "../../context/BusinessContext";
-import { useEffect } from "react";
 import Input, { Textarea, Select } from '../../components/ui/Input';
 import Tabs from '../../components/ui/Tabs';
 import GeneralInfo from "../../components/business/GeneralInfo";
@@ -138,17 +138,131 @@ const GeneralTab = () => {
 
 // ── Tab: Services ─────────────────────────────────────────────
 const ServicesTab = () => {
-  const [services, setServices] = useState([
-    { id: 1, name: 'Haircut', category: 'Hair', price: '₹250', duration: '30 min', active: true },
-    { id: 2, name: 'Facial - Basic', category: 'Skin', price: '₹500', duration: '45 min', active: true },
-    { id: 3, name: 'Facial - Premium', category: 'Skin', price: '₹900', duration: '60 min', active: true },
-    { id: 4, name: 'Hair Color - Global', category: 'Hair', price: '₹800', duration: '2 hr', active: true },
-    { id: 5, name: 'Manicure', category: 'Nails', price: '₹300', duration: '30 min', active: true },
-    { id: 6, name: 'Beard Trim', category: 'Men', price: '₹150', duration: '15 min', active: true },
-    { id: 7, name: 'Hair Spa', category: 'Hair', price: '₹600', duration: '45 min', active: false },
-  ]);
+  const { business } = useBusiness();
+  const [services, setServices] = useState([]);
   const [adding, setAdding] = useState(false);
   const [newSvc, setNewSvc] = useState({ name: '', category: 'Hair', price: '', duration: '' });
+  const [editingService, setEditingService] = useState(null);
+
+  const fetchServices = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3000/api/services/${business.id}`
+      );
+
+      setServices(res.data.services);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (business?.id) {
+      fetchServices();
+    }
+  }, [business]);
+
+  const handleDeleteService = async (serviceId) => {
+    try {
+      await axios.delete(
+        `http://localhost:3000/api/services/${serviceId}`
+      );
+
+      setServices((prev) =>
+        prev.filter((service) => service.id !== serviceId)
+      );
+
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Unable to delete service.");
+    }
+  };
+
+  const handleAddService = async () => {
+    if (!newSvc.name) return;
+
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/api/services/${business.id}`,
+        {
+          name: newSvc.name,
+          price: Number(newSvc.price),
+          duration: Number(newSvc.duration),
+          description: "",
+        }
+      );
+
+      setServices((prev) => [...prev, res.data.service]);
+
+      setNewSvc({
+        name: "",
+        category: "Hair",
+        price: "",
+        duration: "",
+      });
+
+      setAdding(false);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleEditService = (service) => {
+    setEditingService({
+      id: service.id,
+      name: service.name,
+      price: service.price,
+      duration: service.duration,
+    });
+
+    setAdding(true);
+  };
+  
+  const handleUpdateService = async () => {
+  try {
+
+    console.log("Updating service:", editingService);
+
+    console.log(
+      "URL:",
+      `http://localhost:3000/api/services/${editingService.id}`
+    );
+
+    const res = await axios.patch(
+      `http://localhost:3000/api/services/${editingService.id}`,
+      {
+        name: editingService.name,
+        price: Number(editingService.price),
+        duration: Number(editingService.duration),
+        description: editingService.description || "",
+        active: editingService.active,
+      }
+    );
+
+    setServices((prev) =>
+      prev.map((service) =>
+        service.id === editingService.id
+          ? res.data.service
+          : service
+      )
+    );
+
+    setEditingService(null);
+
+  } catch (err) {
+  console.error("UPDATE ERROR:", err);
+  console.error("RESPONSE:", err.response?.data);
+  alert("Failed to update service");
+}
+};
+
+  const handleCancelForm = () => {
+    setAdding(false);
+    setEditingService(null);
+    setNewSvc({ name: '', category: 'Hair', price: '', duration: '' });
+  };
 
   const categories = [...new Set(services.map((s) => s.category))];
 
@@ -180,8 +294,16 @@ const ServicesTab = () => {
                 <Toggle checked={svc.active}
                   onChange={(v) => setServices(services.map((s) => s.id === svc.id ? { ...s, active: v } : s))}
                   size="sm" />
-                <button onClick={() => setServices(services.filter((s) => s.id !== svc.id))}
-                  className="text-text-tertiary hover:text-danger transition-colors">
+                <button
+                  onClick={() => handleEditService(svc)}
+                  className="text-text-tertiary hover:text-primary transition-colors"
+                >
+                  <Edit3 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleDeleteService(svc.id)}
+                  className="text-text-tertiary hover:text-danger transition-colors"
+                >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </motion.div>
@@ -190,30 +312,70 @@ const ServicesTab = () => {
         </div>
       ))}
 
-      {/* Add service inline */}
+      {/* Add / Edit service inline */}
       <AnimatePresence>
         {adding && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
             <Card className="border-primary/30">
               <CardContent>
-                <h4 className="text-sm font-semibold text-text-primary mb-3">New Service</h4>
+                <h4 className="text-sm font-semibold text-text-primary mb-3">
+                  {editingService ? 'Edit Service' : 'New Service'}
+                </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <Input placeholder="Service name" value={newSvc.name} onChange={(e) => setNewSvc({ ...newSvc, name: e.target.value })} />
-                  <Select value={newSvc.category} onChange={(e) => setNewSvc({ ...newSvc, category: e.target.value })}>
+                  <Input
+                    placeholder="Service name"
+                    value={editingService ? editingService.name : newSvc.name}
+                    onChange={(e) =>
+                      editingService
+                        ? setEditingService({ ...editingService, name: e.target.value })
+                        : setNewSvc({ ...newSvc, name: e.target.value })
+                    }
+                  />
+                  <Select
+                    value={editingService ? editingService.category : newSvc.category}
+                    onChange={(e) =>
+                      editingService
+                        ? setEditingService({ ...editingService, category: e.target.value })
+                        : setNewSvc({ ...newSvc, category: e.target.value })
+                    }
+                  >
                     {['Hair', 'Skin', 'Nails', 'Men', 'Other'].map((c) => <option key={c}>{c}</option>)}
                   </Select>
-                  <Input placeholder="₹ Price" value={newSvc.price} onChange={(e) => setNewSvc({ ...newSvc, price: e.target.value })} />
-                  <Input placeholder="Duration" value={newSvc.duration} onChange={(e) => setNewSvc({ ...newSvc, duration: e.target.value })} />
+                  <Input
+                    placeholder="₹ Price"
+                    value={editingService ? editingService.price : newSvc.price}
+                    onChange={(e) =>
+                      editingService
+                        ? setEditingService({ ...editingService, price: e.target.value })
+                        : setNewSvc({ ...newSvc, price: e.target.value })
+                    }
+                  />
+                  <Input
+                    placeholder="Duration"
+                    value={editingService ? editingService.duration : newSvc.duration}
+                    onChange={(e) =>
+                      editingService
+                        ? setEditingService({ ...editingService, duration: e.target.value })
+                        : setNewSvc({ ...newSvc, duration: e.target.value })
+                    }
+                  />
                 </div>
                 <div className="flex gap-2 mt-3">
-                  <Button variant="ghost" size="sm" onClick={() => setAdding(false)}>Cancel</Button>
-                  <Button variant="primary" size="sm" onClick={() => {
-                    if (!newSvc.name) return;
-                    setServices([...services, { id: Date.now(), ...newSvc, active: true }]);
-                    setNewSvc({ name: '', category: 'Hair', price: '', duration: '' });
-                    setAdding(false);
-                  }}>
-                    <Plus className="w-4 h-4" /> Add
+                  <Button variant="ghost" size="sm" onClick={handleCancelForm}>Cancel</Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={editingService ? handleUpdateService : handleAddService}
+                  >
+                    {editingService ? (
+                      <>
+                        <Check className="w-4 h-4" /> Update
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-4 h-4" /> Add
+                      </>
+                    )}
                   </Button>
                 </div>
               </CardContent>

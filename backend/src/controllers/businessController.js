@@ -1,29 +1,34 @@
 import supabase from "../config/supabase.js";
 
+// =========================
+// GET ALL BUSINESSES
+// =========================
 export const getBusinesses = async (req, res) => {
-    try {
+  try {
+    const { data, error } = await supabase
+      .from("businesses")
+      .select("*");
 
-        const { data, error } = await supabase
-            .from("businesses")
-            .select("*");
+    if (error) throw error;
 
-        if (error) throw error;
+    return res.status(200).json({
+      success: true,
+      count: data.length,
+      businesses: data,
+    });
+  } catch (err) {
+    console.error("Get Businesses Error:", err);
 
-        res.status(200).json({
-            success: true,
-            count: data.length,
-            businesses: data
-        });
-
-    } catch (err) {
-
-        res.status(500).json({
-            success: false,
-            message: err.message
-        });
-
-    }
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
 };
+
+// =========================
+// CREATE BUSINESS
+// =========================
 export const createBusiness = async (req, res) => {
   try {
     const {
@@ -37,6 +42,22 @@ export const createBusiness = async (req, res) => {
       pincode,
       whatsapp,
     } = req.body;
+
+    // Check if business already exists
+    const { data: existing, error: existingError } = await supabase
+      .from("businesses")
+      .select("id")
+      .eq("owner_id", ownerId)
+      .maybeSingle();
+
+    if (existingError) throw existingError;
+
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: "Business already exists",
+      });
+    }
 
     const { data, error } = await supabase
       .from("businesses")
@@ -53,21 +74,28 @@ export const createBusiness = async (req, res) => {
           whatsapp,
         },
       ])
-      .select();
+      .select()
+      .single();
 
     if (error) throw error;
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      business: data[0],
+      business: data,
     });
   } catch (err) {
-    res.status(500).json({
+    console.error("Create Business Error:", err);
+
+    return res.status(500).json({
       success: false,
       message: err.message,
     });
   }
 };
+
+// =========================
+// GET MY BUSINESS
+// =========================
 export const getMyBusiness = async (req, res) => {
   try {
     const { ownerId } = req.params;
@@ -76,23 +104,34 @@ export const getMyBusiness = async (req, res) => {
       .from("businesses")
       .select("*")
       .eq("owner_id", ownerId)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
 
-    res.status(200).json({
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: "Business not found",
+      });
+    }
+
+    return res.status(200).json({
       success: true,
       business: data,
     });
-
   } catch (err) {
-    res.status(500).json({
+    console.error("Get My Business Error:", err);
+
+    return res.status(500).json({
       success: false,
       message: err.message,
     });
   }
 };
 
+// =========================
+// UPDATE BUSINESS
+// =========================
 export const updateBusiness = async (req, res) => {
   try {
     const { id } = req.params;
@@ -122,26 +161,19 @@ export const updateBusiness = async (req, res) => {
         whatsapp,
       })
       .eq("id", Number(id))
-      .select();
+      .select()
+      .single();
 
     if (error) throw error;
 
-    if (!data || data.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Business not found",
-      });
-    }
-
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      business: data[0],
+      business: data,
     });
-
   } catch (err) {
-    console.error("Update Error:", err);
+    console.error("Update Business Error:", err);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: err.message,
     });

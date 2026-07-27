@@ -11,25 +11,32 @@ export function BusinessProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   const fetchBusiness = async () => {
-    if (!user) {
-      setBusiness(null);
-      setLoading(false);
-      return;
-    }
+  if (!user) {
+    setBusiness(null);
+    setLoading(false);
+    return;
+  }
 
-    try {
-     const res = await axios.get(
-  `http://localhost:3000/api/businesses/me/${user.id}`
-);
+  console.log("User object:", user);
+  console.log("User ID:", user?.id);
 
-setBusiness(res.data.business);
+  const url = `http://localhost:3000/api/businesses/me/${user.id}`;
+  console.log("Request URL:", url);
 
-    } catch (err) {
-      console.error("Failed to fetch business", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const res = await axios.get(url);
+
+    console.log("Response:", res.data);
+
+    setBusiness(res.data.business);
+
+  } catch (err) {
+    console.error("Failed to fetch business", err);
+    console.log("Error Response:", err.response?.data);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchBusiness();
