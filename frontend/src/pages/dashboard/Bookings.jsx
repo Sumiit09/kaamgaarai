@@ -1,33 +1,49 @@
-import { useState } from 'react';
+import { useEffect, useState } from "react";
 import { motion } from 'framer-motion';
 import { Plus, Calendar, List, Clock, Check, X, Phone } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import Avatar from '../../components/ui/Avatar';
-import { todayBookings } from '../../data/mockData';
 
-const allBookings = [
-  ...todayBookings,
-  { id: 7, customer: 'Arjun Yadav', service: 'Haircut + Beard', time: 'Tomorrow 10:00 AM', price: '₹400', status: 'confirmed', avatar: 'AY', phone: '+91 95678 90123' },
-  { id: 8, customer: 'Sunita Devi', service: 'Hair Spa', time: 'Tomorrow 2:00 PM', price: '₹600', status: 'confirmed', avatar: 'SD', phone: '+91 91234 56789' },
-  { id: 9, customer: 'Rohan Kulkarni', service: 'Facial Premium', time: 'Jul 10, 5:00 PM', price: '₹900', status: 'pending', avatar: 'RK', phone: '+91 93456 78901' },
-  { id: 10, customer: 'Meena Joshi', service: 'Manicure + Pedicure', time: 'Jul 10, 11:00 AM', price: '₹700', status: 'cancelled', avatar: 'MJ', phone: '+91 94567 89012' },
-  { id: 11, customer: 'Vikram Patel', service: 'Hair Color', time: 'Jul 11, 11:00 AM', price: '₹800', status: 'completed', avatar: 'VP', phone: '+91 90123 45678' },
-];
+import axios from "axios";
+import { useBusiness } from "../../context/BusinessContext";
+
+
 
 const Bookings = () => {
   const [view, setView] = useState('list');
   const [filter, setFilter] = useState('all');
+  const { business } = useBusiness();
 
-  const filtered = allBookings.filter((b) => {
+const [bookings, setBookings] = useState([]);
+
+  const filtered = bookings.filter((b) => {
     if (filter === 'today') return b.time.includes('Today');
     if (filter === 'upcoming') return b.time.includes('Tomorrow') || b.time.includes('Jul');
     if (filter === 'cancelled') return b.status === 'cancelled';
     if (filter === 'completed') return b.status === 'completed';
     return true;
   });
+const fetchBookings = async () => {
+  if (!business) return;
 
+  try {
+    const res = await axios.get(
+      `http://localhost:3000/api/bookings/${business.id}`
+    );
+
+    console.log("Bookings API Response:", res.data);
+
+    setBookings(res.data.bookings);
+    console.log(res.data.bookings[0]);
+  } catch (err) {
+    console.error(err);
+  }
+};
+useEffect(() => {
+  fetchBookings();
+}, [business]);
   const statusVariant = {
     confirmed: 'success',
     pending: 'warning',
@@ -86,24 +102,29 @@ const Bookings = () => {
                 <CardContent>
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <Avatar name={booking.customer} size="md" color="primary" />
+                      <Avatar name={booking.customer_name} size="md" color="primary" />
                       <div>
-                        <p className="text-sm font-semibold text-text-primary">{booking.customer}</p>
+                        <p className="text-sm font-semibold text-text-primary">{booking.customer_name}</p>
                         <p className="text-xs text-text-secondary">{booking.service}</p>
                       </div>
                     </div>
-                    <Badge variant={statusVariant[booking.status]} size="sm">{booking.status}</Badge>
+                   <Badge
+    variant={statusVariant[booking.status.toLowerCase()]}
+    size="sm"
+>
+    {booking.status}
+</Badge>
                   </div>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2 text-text-secondary">
-                      <Clock className="w-4 h-4 text-text-tertiary" /> {booking.time}
+                      <Clock className="w-4 h-4 text-text-tertiary" /> {booking.appointment_date} | {booking.appointment_time}
                     </div>
                     <div className="flex items-center gap-2 text-text-secondary">
                       <Phone className="w-4 h-4 text-text-tertiary" /> {booking.phone}
                     </div>
                   </div>
                   <div className="flex items-center justify-between mt-4 pt-3 border-t border-border-light">
-                    <span className="text-lg font-bold text-text-primary">{booking.price}</span>
+                    <span className="text-lg font-bold text-text-primary">₹ N/A</span>
                     <div className="flex gap-1">
                       <button className="p-1.5 rounded-lg text-success hover:bg-success/10 transition-colors">
                         <Check className="w-4 h-4" />

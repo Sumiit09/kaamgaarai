@@ -44,3 +44,83 @@ export const createBooking = async (req, res) => {
 
     }
 };
+export const getBookings = async (req, res) => {
+  try {
+    const { businessId } = req.params;
+
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("business_id", businessId)
+      .order("appointment_date", { ascending: true })
+      .order("appointment_time", { ascending: true });
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      bookings: data,
+    });
+
+  } catch (err) {
+    console.error("Get Bookings Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+export const updateBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { status } = req.body;
+
+    const { data, error } = await supabase
+      .from("bookings")
+      .update({ status })
+      .eq("id", Number(id))
+      .select();
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      booking: data[0],
+    });
+
+  } catch (err) {
+    console.error("Update Booking Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+export const deleteBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { error } = await supabase
+      .from("bookings")
+      .delete()
+      .eq("id", Number(id));
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      message: "Booking deleted successfully",
+    });
+
+  } catch (err) {
+    console.error("Delete Booking Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
