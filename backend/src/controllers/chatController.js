@@ -1,7 +1,7 @@
 import supabase from "../config/supabase.js";
 
 import { extractIntent } from "../ai/intentExtractor.js";
-import { parseGeminiJSON } from "../utils/jsonParser.js";
+
 
 import { buildPrompt } from "../ai/promptBuilder.js";
 import { getAIResponse } from "../services/chatService.js";
@@ -50,9 +50,7 @@ export const chat = async (req, res) => {
         if (servicesError) throw servicesError;
 
         // Detect intent
-        const rawIntent = await extractIntent(message);
-
-        const intent = parseGeminiJSON(rawIntent);
+       const intent = await extractIntent(message);
         console.log("RAW INTENT:");
 console.log(rawIntent);
 
