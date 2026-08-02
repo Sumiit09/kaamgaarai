@@ -74,14 +74,19 @@ export const getBookings = async (req, res) => {
 export const updateBooking = async (req, res) => {
   try {
     const { id } = req.params;
-
     const { status } = req.body;
+
+    console.log("Booking ID:", id);
+    console.log("New Status:", status);
 
     const { data, error } = await supabase
       .from("bookings")
       .update({ status })
       .eq("id", Number(id))
       .select();
+
+    console.log("Updated Data:", data);
+    console.log("Supabase Error:", error);
 
     if (error) throw error;
 

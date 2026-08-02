@@ -43,6 +43,7 @@ const fetchBookings = async () => {
 };
 useEffect(() => {
   fetchBookings();
+
 }, [business]);
   const statusVariant = {
     confirmed: 'success',
@@ -50,7 +51,23 @@ useEffect(() => {
     completed: 'accent',
     cancelled: 'danger',
   };
+const updateBookingStatus = async (id, status) => {
+  console.log("Updating:", id, status);
 
+  try {
+    const res = await axios.patch(
+      `http://localhost:3000/api/bookings/${id}`,
+      { status }
+    );
+
+    console.log("PATCH Response:", res.data);
+
+    fetchBookings();
+
+  } catch (err) {
+    console.error(err);
+  }
+};
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -126,12 +143,18 @@ useEffect(() => {
                   <div className="flex items-center justify-between mt-4 pt-3 border-t border-border-light">
                     <span className="text-lg font-bold text-text-primary">₹ N/A</span>
                     <div className="flex gap-1">
-                      <button className="p-1.5 rounded-lg text-success hover:bg-success/10 transition-colors">
-                        <Check className="w-4 h-4" />
-                      </button>
-                      <button className="p-1.5 rounded-lg text-danger hover:bg-danger/10 transition-colors">
-                        <X className="w-4 h-4" />
-                      </button>
+                     <button
+  onClick={() => updateBookingStatus(booking.id, "Confirmed")}
+  className="p-1.5 rounded-lg text-success hover:bg-success/10 transition-colors"
+>
+  <Check className="w-4 h-4" />
+</button>
+                      <button
+  onClick={() => updateBookingStatus(booking.id, "Cancelled")}
+  className="p-1.5 rounded-lg text-danger hover:bg-danger/10 transition-colors"
+>
+  <X className="w-4 h-4" />
+</button>
                     </div>
                   </div>
                 </CardContent>

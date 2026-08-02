@@ -1,13 +1,19 @@
-import ai from "./geminiService.js";
-import { buildPrompt } from "../ai/promptBuilder.js";
+export const getAIResponse = async ({
+    business,
+    services,
+    customer,
+    conversationHistory,
+    message
+}) => {
 
-export const getAIResponse = async (business, services, message) => {
-
-    const prompt = buildPrompt(
+    const prompt = buildPrompt({
         business,
         services,
-        message
-    );
+        customer,
+        conversationHistory,
+        userMessage: message,
+        currentDateTime: new Date().toLocaleString("en-IN")
+    });
 
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
