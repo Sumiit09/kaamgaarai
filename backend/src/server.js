@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import app from "./app.js";
+import testRoutes from "./routes/testRoutes.js";
 
 dotenv.config();
 
@@ -11,3 +12,4 @@ app.listen(PORT, () => {
     console.log(`🌍 Server running at: http://localhost:${PORT}`);
     console.log("====================================");
 });
+app.use("/test", testRoutes);
