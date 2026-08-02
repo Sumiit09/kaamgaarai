@@ -1,6 +1,9 @@
 import { manageConversation } from "../ai/conversationManager.js";
 import { saveBooking } from "../services/bookingService.js";
 import { matchService } from "../services/serviceMatcher.js";
+import {
+    updateCustomerName
+} from "../services/customerService.js";
 
 export const execute = async (intentData, context) => {
 console.log("BOOK APPOINTMENT HANDLER EXECUTED");
@@ -14,6 +17,18 @@ console.log("BOOK APPOINTMENT HANDLER EXECUTED");
         phone,
         intentData
     );
+
+    if (
+    intentData.entities?.customerName
+) {
+
+    await updateCustomerName(
+        businessId,
+        phone,
+        intentData.entities.customerName
+    );
+
+}
 const matchedService = matchService(
     session.service,
     context.services

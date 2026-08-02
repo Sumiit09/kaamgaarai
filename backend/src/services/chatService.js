@@ -1,5 +1,8 @@
 import ai from "./geminiService.js";
-
+import {
+    getCustomer,
+    createCustomer
+} from "./customerService.js";
 import { buildPrompt } from "../ai/promptBuilder.js";
 import { extractIntent } from "../ai/intentExtractor.js";
 
@@ -20,7 +23,20 @@ export const getAIResponse = async ({
     const business = await getBusiness(businessId);
     const services = await getServices(businessId);
 
-    const customer = {};
+ let customer = await getCustomer(
+    businessId,
+    phone
+);
+
+if (!customer) {
+
+    customer = await createCustomer({
+        businessId,
+        phone,
+        name: null
+    });
+
+}
     const conversationHistory = [];
 
     // Build Prompt
