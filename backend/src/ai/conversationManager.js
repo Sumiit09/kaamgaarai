@@ -18,17 +18,19 @@ export const manageConversation = async (
 
     const updates = {};
 
-    if (bookingData.customerName)
-        updates.customer_name = bookingData.customerName;
+    const entities = bookingData.entities || {};
 
-    if (bookingData.service)
-        updates.service = bookingData.service;
+if (entities.customerName)
+    updates.customer_name = entities.customerName;
 
-    if (bookingData.appointmentDate)
-        updates.appointment_date = bookingData.appointmentDate;
+if (entities.service)
+    updates.service = entities.service;
 
-    if (bookingData.appointmentTime)
-        updates.appointment_time = bookingData.appointmentTime;
+if (entities.appointmentDate)
+    updates.appointment_date = entities.appointmentDate;
+
+if (entities.appointmentTime)
+    updates.appointment_time = entities.appointmentTime;
 
     await updateSession(session.id, updates);
 

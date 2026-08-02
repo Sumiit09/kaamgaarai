@@ -25,3 +25,18 @@ router.post("/intent", async (req, res) => {
 });
 
 export default router;
+
+import { matchService } from "../services/serviceMatcher.js";
+
+router.post("/service-match", (req, res) => {
+
+    const { userService, services } = req.body;
+
+    const result = matchService(userService, services);
+
+    res.json({
+        success: true,
+        result
+    });
+
+});

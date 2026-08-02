@@ -1,17 +1,29 @@
 import ai from "./geminiService.js";
+
 import { buildPrompt } from "../ai/promptBuilder.js";
 import { extractIntent } from "../ai/intentExtractor.js";
+
 import { routeAction } from "./actionRouter.js";
 
+import {
+    getBusiness,
+    getServices
+} from "./businessService.js";
+
 export const getAIResponse = async ({
-    business,
-    services,
-    customer = {},
-    conversationHistory = [],
+    businessId,
+    phone,
     message
 }) => {
 
-    // Build prompt
+    // Fetch Business Context
+    const business = await getBusiness(businessId);
+    const services = await getServices(businessId);
+
+    const customer = {};
+    const conversationHistory = [];
+
+    // Build Prompt
     const prompt = buildPrompt({
         business,
         services,
@@ -21,8 +33,8 @@ export const getAIResponse = async ({
         currentDateTime: new Date().toLocaleString("en-IN")
     });
 
-    // Get conversational reply (current implementation)
-    const response = await ai.models.generateContent({
+    // Generate AI response (kept for conversational context)
+    await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt
     });
@@ -30,13 +42,14 @@ export const getAIResponse = async ({
     // Extract structured intent
     const intentData = await extractIntent(message);
 
-    // Route to correct handler
-    const result = await routeAction(intentData, {
+    // Route to the appropriate handler
+    return await routeAction(intentData, {
+        businessId,
+        phone,
         business,
         services,
         customer,
         conversationHistory
     });
 
-    return result;
 };
