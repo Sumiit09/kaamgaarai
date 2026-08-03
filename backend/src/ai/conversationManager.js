@@ -7,7 +7,7 @@ import {
 export const manageConversation = async (
     businessId,
     phone,
-    bookingData
+    intentData
 ) => {
 
     let session = await getSession(businessId, phone);
@@ -16,25 +16,30 @@ export const manageConversation = async (
         session = await createSession(businessId, phone);
     }
 
+    const entities = intentData.entities || {};
+
     const updates = {};
 
-    const entities = bookingData.entities || {};
+    if (entities.customerName) {
+        updates.customer_name = entities.customerName;
+    }
 
-if (entities.customerName)
-    updates.customer_name = entities.customerName;
+    if (entities.service) {
+        updates.service = entities.service;
+    }
 
-if (entities.service)
-    updates.service = entities.service;
+    if (entities.appointmentDate) {
+        updates.appointment_date = entities.appointmentDate;
+    }
 
-if (entities.appointmentDate)
-    updates.appointment_date = entities.appointmentDate;
+    if (entities.appointmentTime) {
+        updates.appointment_time = entities.appointmentTime;
+    }
 
-if (entities.appointmentTime)
-    updates.appointment_time = entities.appointmentTime;
+    if (Object.keys(updates).length > 0) {
+        await updateSession(session.id, updates);
+    }
 
-    await updateSession(session.id, updates);
+    return await getSession(businessId, phone);
 
-    const latest = await getSession(businessId, phone);
-
-    return latest;
 };

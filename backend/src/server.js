@@ -6,10 +6,10 @@ dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
+app.use("/test", testRoutes);
 app.listen(PORT, () => {
     console.log("====================================");
     console.log("🚀 AI Employee Backend Started");
     console.log(`🌍 Server running at: http://localhost:${PORT}`);
     console.log("====================================");
 });
-app.use("/test", testRoutes);

@@ -1,6 +1,7 @@
 import { getAIResponse } from "../services/chatService.js";
 
 export const chat = async (req, res) => {
+   
     try {
 
         const {
@@ -22,7 +23,7 @@ export const chat = async (req, res) => {
                 message: "Message is required"
             });
         }
-
+        console.log("STEP 1 - CHAT CONTROLLER");
         const result = await getAIResponse({
             businessId,
             phone,

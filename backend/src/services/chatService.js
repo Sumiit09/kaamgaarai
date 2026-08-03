@@ -1,17 +1,18 @@
 import ai from "./geminiService.js";
-import {
-    getCustomer,
-    createCustomer
-} from "./customerService.js";
-import { buildPrompt } from "../ai/promptBuilder.js";
-import { extractIntent } from "../ai/intentExtractor.js";
-
-import { routeAction } from "./actionRouter.js";
 
 import {
     getBusiness,
     getServices
 } from "./businessService.js";
+
+import {
+    getCustomer,
+    createCustomer
+} from "./customerService.js";
+
+import { buildPrompt } from "../ai/promptBuilder.js";
+import { extractIntent } from "../ai/intentExtractor.js";
+import { routeAction } from "./actionRouter.js";
 
 export const getAIResponse = async ({
     businessId,
@@ -19,27 +20,29 @@ export const getAIResponse = async ({
     message
 }) => {
 
+    console.log("STEP 2 - CHAT SERVICE");
+
     // Fetch Business Context
     const business = await getBusiness(businessId);
     const services = await getServices(businessId);
 
- let customer = await getCustomer(
-    businessId,
-    phone
-);
-
-if (!customer) {
-
-    customer = await createCustomer({
+    let customer = await getCustomer(
         businessId,
-        phone,
-        name: null
-    });
+        phone
+    );
 
-}
+    if (!customer) {
+
+        customer = await createCustomer({
+            businessId,
+            phone,
+            name: null
+        });
+
+    }
+
     const conversationHistory = [];
 
-    // Build Prompt
     const prompt = buildPrompt({
         business,
         services,
@@ -49,16 +52,18 @@ if (!customer) {
         currentDateTime: new Date().toLocaleString("en-IN")
     });
 
-    // Generate AI response (kept for conversational context)
     await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt
     });
 
-    // Extract structured intent
     const intentData = await extractIntent(message);
 
-    // Route to the appropriate handler
+    console.log("STEP 3 - INTENT");
+    console.log(intentData);
+
+    console.log("STEP 4 - ROUTING");
+
     return await routeAction(intentData, {
         businessId,
         phone,

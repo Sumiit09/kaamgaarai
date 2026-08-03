@@ -10,9 +10,13 @@ const handlers = {
 };
 
 export const routeAction = async (intentData, context) => {
+    console.log("STEP 5 - ACTION ROUTER");
+console.log(intentData.intent);
+console.log("ROUTER RECEIVED:", intentData.intent);
+console.log("AVAILABLE HANDLERS:", Object.keys(handlers));
 
     const handler = handlers[intentData.intent];
-
+console.log("SELECTED HANDLER:", handler);
     if (!handler) {
 
         return {

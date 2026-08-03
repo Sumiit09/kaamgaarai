@@ -40,3 +40,69 @@ router.post("/service-match", (req, res) => {
     });
 
 });
+
+import { getBookingsForDate } from "../services/availabilityService.js";
+
+router.post("/availability", async (req, res) => {
+
+    try {
+
+        const {
+            businessId,
+            appointmentDate
+        } = req.body;
+
+        const bookings = await getBookingsForDate(
+            businessId,
+            appointmentDate
+        );
+
+        res.json({
+            success: true,
+            bookings
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+
+});
+
+import { isSlotAvailable } from "../services/availabilityService.js";
+
+router.post("/slot-check", async (req, res) => {
+
+    try {
+
+        const {
+            businessId,
+            appointmentDate,
+            appointmentTime
+        } = req.body;
+
+        const available = await isSlotAvailable(
+            businessId,
+            appointmentDate,
+            appointmentTime
+        );
+
+        res.json({
+            success: true,
+            available
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+
+});
